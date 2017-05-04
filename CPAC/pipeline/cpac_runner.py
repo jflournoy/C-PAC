@@ -257,8 +257,15 @@ def run_cpac_on_cluster(config_file, subject_list_file, strategies_file,
     job_scheduler = pipeline_config.resourceManager.lower()
 
     # For SLURM time limit constraints only, hh:mm:ss
-    hrs_limit = 8*len(sublist)
-    time_limit = '%d:00:00' % hrs_limit
+    # Because SLURM may split many jobs accross many cores and nodes
+    # it is not always necessary to multiply the time by the length of
+    # subjects. We let the user specify it explicitly in the config
+    # but set a default if they don't
+    try:
+        time_limit = pipeline_config.timeLimit
+    except:
+        hrs_limit = 8*len(sublist)
+        time_limit = '%d:00:00' % hrs_limit
 
     # Batch file variables
     shell = commands.getoutput('echo $SHELL')
