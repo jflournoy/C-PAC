@@ -5,6 +5,7 @@ import nipype.pipeline.engine as pe
 import nipype.interfaces.fsl as fsl
 import nipype.interfaces.utility as util
 from nipype.interfaces.afni import preprocess
+from nipype.interfaces.afni import utils
 from CPAC.utils import dbg_file_lineno
 
 # workflow to edit the scan to the proscribed TRs
@@ -111,7 +112,7 @@ def create_wf_edit_func( wf_name = "edit_func" ):
 
     try:
         # allocate a node to edit the functional file 
-        func_drop_trs = pe.Node(interface=preprocess.Calc(),
+        func_drop_trs = pe.Node(interface=utils.Calc(),
                                name='func_drop_trs')
         func_drop_trs.inputs.expr = 'a'
         func_drop_trs.inputs.outputtype = 'NIFTI_GZ'
@@ -373,14 +374,14 @@ def create_func_preproc(use_bet = False, wf_name = 'func_preproc'):
                           name='outputspec')
 
     
-    func_deoblique = pe.Node(interface=preprocess.Refit(),
+    func_deoblique = pe.Node(interface=utils.Refit(),
                             name='func_deoblique')
     func_deoblique.inputs.deoblique = True
     
     preproc.connect(inputNode, 'func',
                         func_deoblique, 'in_file')
     
-    func_reorient = pe.Node(interface=preprocess.Resample(),
+    func_reorient = pe.Node(interface=utils.Resample(),
                                name='func_reorient')
     func_reorient.inputs.orientation = 'RPI'
     func_reorient.inputs.outputtype = 'NIFTI_GZ'
@@ -391,7 +392,7 @@ def create_func_preproc(use_bet = False, wf_name = 'func_preproc'):
     preproc.connect(func_reorient, 'out_file',
                     outputNode, 'reorient')
     
-    func_get_mean_RPI = pe.Node(interface=preprocess.TStat(),
+    func_get_mean_RPI = pe.Node(interface=utils.TStat(),
                             name='func_get_mean_RPI')
     func_get_mean_RPI.inputs.options = '-mean'
     func_get_mean_RPI.inputs.outputtype = 'NIFTI_GZ'
@@ -477,7 +478,7 @@ def create_func_preproc(use_bet = False, wf_name = 'func_preproc'):
 
         
     
-    func_edge_detect = pe.Node(interface=preprocess.Calc(),
+    func_edge_detect = pe.Node(interface=utils.Calc(),
                             name='func_edge_detect')
     func_edge_detect.inputs.expr = 'a*b'
     func_edge_detect.inputs.outputtype = 'NIFTI_GZ'
@@ -502,7 +503,7 @@ def create_func_preproc(use_bet = False, wf_name = 'func_preproc'):
                     outputNode, 'skullstrip')
 
     
-    func_mean_skullstrip = pe.Node(interface=preprocess.TStat(),
+    func_mean_skullstrip = pe.Node(interface=utils.TStat(),
                            name='func_mean_skullstrip')
     func_mean_skullstrip.inputs.options = '-mean'
     func_mean_skullstrip.inputs.outputtype = 'NIFTI_GZ'

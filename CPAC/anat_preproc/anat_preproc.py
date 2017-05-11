@@ -1,4 +1,5 @@
 from nipype.interfaces.afni import preprocess
+from nipype.interfaces.afni import utils
 import nipype.pipeline.engine as pe
 import nipype.interfaces.afni as afni
 import nipype.interfaces.utility as util
@@ -83,11 +84,10 @@ def create_anat_preproc(already_skullstripped=False):
                                                         'skullstrip',
                                                         'brain']),
                          name='outputspec')
-    print "Attempting to use interface preprocess.Refit()"
-    anat_deoblique = pe.Node(interface=preprocess.Refit(),
+    anat_deoblique = pe.Node(interface=utils.Refit(),
                          name='anat_deoblique')
     anat_deoblique.inputs.deoblique = True
-    anat_reorient = pe.Node(interface=preprocess.Resample(),
+    anat_reorient = pe.Node(interface=utils.Resample(),
                             name='anat_reorient')
     anat_reorient.inputs.orientation = 'RPI'
     anat_reorient.inputs.outputtype = 'NIFTI_GZ'
@@ -96,7 +96,7 @@ def create_anat_preproc(already_skullstripped=False):
                                   name='anat_skullstrip')
         #anat_skullstrip.inputs.options = '-o_ply'
         anat_skullstrip.inputs.outputtype = 'NIFTI_GZ'
-    anat_skullstrip_orig_vol = pe.Node(interface=preprocess.Calc(),
+    anat_skullstrip_orig_vol = pe.Node(interface=utils.Calc(),
                         name='anat_skullstrip_orig_vol')
     anat_skullstrip_orig_vol.inputs.expr = 'a*step(b)'
     anat_skullstrip_orig_vol.inputs.outputtype = 'NIFTI_GZ'
