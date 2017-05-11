@@ -83,6 +83,7 @@ def create_anat_preproc(already_skullstripped=False):
                                                         'skullstrip',
                                                         'brain']),
                          name='outputspec')
+    print "Attempting to use interface preprocess.Refit()"
     anat_deoblique = pe.Node(interface=preprocess.Refit(),
                          name='anat_deoblique')
     anat_deoblique.inputs.deoblique = True
